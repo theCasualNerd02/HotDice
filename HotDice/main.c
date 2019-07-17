@@ -16,18 +16,26 @@
 #include <apple2enh.h>
 
 
+#define NUM_DICE 6
+#define MIN_DIE_VALUE 1
+#define MAX_DIE_VALUE 6
+#define NUM_PLAYERS 4
+
+
 typedef struct tGame {
     int points[4];
     int riskedPoints;
     int turn;
     int removedDice;
-    int dice[6];
+    int dice[NUM_DICE];
+    int diceCount[6];
 } tGame;
 tGame game;
 void rollADice(int i)    {
     int lowRoll =  1;
     int highRoll = 6;
     game.dice[i] = rand()%(highRoll - lowRoll + 1);
+    game.dice[i]+= lowRoll;
 }
 
 void printInstructions(void)    {
@@ -53,7 +61,7 @@ void printInstructions(void)    {
     printf("6,6,6 = 600 pts\n");
     printf("1,2,3,4,5,6 = 1500 pts\n\n");
     printf("r means reroll, e means end turn\n");
-    printf("Press any key to continue: ");
+    printf("Press any key to continue: \n");
     while (! kbhit())   {
         seed++;
     }
@@ -65,7 +73,7 @@ void sortDice(void) {
     int i, x, swap;
     for (x = 0 ; x < 6 - 1; x++)
     {
-        for (i = 0 ; i < 6 - x - 1; i++)
+        for (i = 0 ; i < NUM_DICE - x - 1; i++)
         {
             if (game.dice[i] > game.dice[i+1])  { /* For decreasing order use < */
                 swap       = game.dice[i];
@@ -73,6 +81,16 @@ void sortDice(void) {
                 game.dice[i+1] = swap;
             }
         }
+    }
+}
+
+void countDice(void)    {
+    int i;
+    for (i = 0; i < MAX_DIE_VALUE; i++) {
+        game.diceCount[i] = 0;
+    }
+    for (i = 0; i < NUM_DICE; i++)  {
+        game.diceCount[game.dice[i]]++;
     }
 }
 
@@ -86,13 +104,34 @@ int main(void)  {
     // Game Starts
     do  {
         do  {
-            for (i = 0; i < 6; i++)  {
+            for (i = 0; i < NUM_DICE; i++)  {
                 rollADice(i);
+            }
+            sortDice();
+            for (i = 0; i < NUM_DICE; i++) {
+                printf("%i",game.dice[i]);
+                countDice();
+                if (i != NUM_DICE - 1) {
+                    printf(", ");
+                }
+                else printf("\n");
             }
             do {
                 input = cgetc();
-                if (input = 'r')    {
-                    // Reroll
+                if (input == 'r')    {
+                    for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
+                        rollADice(i);
+                        
+                    }
+                    sortDice();
+                    countDice();
+                    for (i = 0; i < NUM_DICE; i++) {
+                        printf("%i",game.dice[i]);
+                        if (i != 5) {
+                            printf(", ");
+                        }
+                        else printf("\n");
+                    }
                 }
             } while(input != 'e');
         } while(game.riskedPoints != 0 || input != 'e');
