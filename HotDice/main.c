@@ -13,19 +13,27 @@
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <apple2enh.h>
 
 
 typedef struct tGame {
     int points[4];
     int riskedPoints;
     int turn;
+    int removedDice;
+    int dice[6];
 } tGame;
+tGame game;
+void rollADice(int i)    {
+    int lowRoll =  1;
+    int highRoll = 6;
+    game.dice[i] = rand()%(highRoll - lowRoll + 1);
+}
 
-
-void printInstructions(void)
-{
+void printInstructions(void)    {
     unsigned int seed = 0;
     // Intro and Instructions
+    videomode(VIDEOMODE_80x24);
     printf("Hot Dice!!\n");
     printf("Written by: Matthew Rand\n");
     printf("------------------------\n\n");
@@ -53,27 +61,33 @@ void printInstructions(void)
     srand(seed);
     
 }
+void sortDice(void) {
+    int i, x, swap;
+    for (x = 0 ; x < 6 - 1; x++)
+    {
+        for (i = 0 ; i < 6 - x - 1; i++)
+        {
+            if (game.dice[i] > game.dice[i+1])  { /* For decreasing order use < */
+                swap       = game.dice[i];
+                game.dice[i]   = game.dice[i+1];
+                game.dice[i+1] = swap;
+            }
+        }
+    }
+}
 
-
-int main(void)
-{
+int main(void)  {
     // Variable declaration
-    tGame game;
     int highestScore = 1;   // Is the player with the highest score variable
-    int lowRoll =  1;
-    int highRoll = 6;
     int i;
-    int dice;
     char input;
     
     printInstructions();
     // Game Starts
     do  {
         do  {
-            for (i = 1; i < 7; i++)  {
-                dice = rand()%(highRoll - lowRoll + 1);
-                printf("%i",dice);
-                if (i != 6) printf(", ");
+            for (i = 0; i < 6; i++)  {
+                rollADice(i);
             }
             do {
                 input = cgetc();
@@ -84,5 +98,4 @@ int main(void)
         } while(game.riskedPoints != 0 || input != 'e');
     } while(highestScore < 10000);
     return 0;
-}
-
+    }

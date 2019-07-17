@@ -26,7 +26,7 @@ PGM=HotDice
 #    MACHINE = apple2-reboot
 #    MACHINE = apple2enh
 #    MACHINE = apple2enh-dos33
-#    MACHINE = apple2enh-system
+MACHINE = apple2enh-system
 #    MACHINE = apple2enh-loader
 #    MACHINE = apple2enh-reboot
 
