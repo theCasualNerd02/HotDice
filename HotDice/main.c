@@ -117,15 +117,6 @@ void countDice(void)    {
 }
 
 
-void diceSelectCheck(void)  {
-    int i;
-    for (i = 0; i < NUM_DICE; i++)  {
-        if (game.diceSelected[i])   game.removedDice++;   // If the dice is selected remove it
-        game.diceSelected[i] = false;
-    }
-}
-
-
 void printRolls(void)   {
     int i;
     for (i = 0; i < NUM_DICE - game.removedDice; i++) {
@@ -153,13 +144,16 @@ void findValueSelected(void)    {
         if (game.diceSelected[i])   {
             if (game.dice[i] == 1 ) {
                 game.points[game.turn] += 100;
+                game.removedDice++;
+                printf("%i\n",game.removedDice);
             }
             else if ( game.dice[i] == 5)    {
                 game.points[game.turn] += 50;
+                game.removedDice++;
+                printf("%removed-i\n",game.removedDice);
             }
             else {
-                printf("Sorry but the chosen roll is invalid");
-                game.removedDice--;
+                printf("Sorry but the chosen roll is invalid\n");
                 game.diceSelected[i] = false;
             }
         }
@@ -185,7 +179,7 @@ void roll(void) {
         }
         findValueSelected();
         if (input == 'r' && anyDiceSelected())    {
-            diceSelectCheck();
+            findValueSelected();
             for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
                 rollADice(i);
             }
