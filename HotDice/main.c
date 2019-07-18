@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <apple2enh.h>
 
 
@@ -28,15 +29,25 @@ typedef struct tGame {
     int turn;
     int removedDice;
     int dice[NUM_DICE];
-    int diceCount[6];
+    int diceCount[MAX_DIE_VALUE];
+    bool diceSelected[NUM_DICE];
 } tGame;
+
 tGame game;
-void rollADice(int i)    {
-    int lowRoll =  1;
-    int highRoll = 6;
-    game.dice[i] = rand()%(highRoll - lowRoll + 1);
-    game.dice[i]+= lowRoll;
+
+
+void initGame(void)    {
+    int i;
+    game.removedDice = 0;
+    for (i = 0; i < NUM_DICE; i++)  {
+        game.diceSelected[i] = false;
+        game.diceCount[MAX_DIE_VALUE];
+    }
+    game.riskedPoints = 0;
+    game.turn = 0;
+    
 }
+
 
 void printInstructions(void)    {
     unsigned int seed = 0;
@@ -69,6 +80,16 @@ void printInstructions(void)    {
     srand(seed);
     
 }
+
+
+void rollADice(int i)    {
+    int lowRoll =  1;
+    int highRoll = 6;
+    game.dice[i] = rand()%(highRoll - lowRoll + 1);
+    game.dice[i]+= lowRoll;
+}
+
+
 void sortDice(void) {
     int i, x, swap;
     for (x = 0 ; x < 6 - 1; x++)
@@ -84,6 +105,7 @@ void sortDice(void) {
     }
 }
 
+
 void countDice(void)    {
     int i;
     for (i = 0; i < MAX_DIE_VALUE; i++) {
@@ -94,47 +116,97 @@ void countDice(void)    {
     }
 }
 
+
+void diceSelectCheck(void)  {
+    int i;
+    for (i = 0; i < NUM_DICE; i++)  {
+        if (game.diceSelected[i])   game.removedDice++;   // If the dice is selected remove it
+        game.diceSelected[i] = false;
+    }
+}
+
+
+void printRolls(void)   {
+    int i;
+    for (i = 0; i < NUM_DICE - game.removedDice; i++) {
+        printf("%i",game.dice[i]);
+        countDice();
+        if (i != NUM_DICE - game.removedDice - 1) {
+            printf(", ");
+        }
+        else printf("\n");
+    }
+       printf("1, 2, 3, 4, 5, 6 select the values you wish to keep\n");
+}
+bool anyDiceSelected(void)  {
+    int i;
+    for (i = 0; i < 5; i++) {
+        if (game.diceSelected[i]) return true;
+    }
+    return false;
+}
+
+
+void findValueSelected(void)    {
+    int i;
+    for (i = 0; i < MAX_DIE_VALUE; i++) {
+        if (game.diceSelected[i])   {
+            if (game.dice[i] == 1 ) {
+                game.points[game.turn] += 100;
+            }
+            else if ( game.dice[i] == 5)    {
+                game.points[game.turn] += 50;
+            }
+            else {
+                printf("Sorry but the chosen roll is invalid");
+            }
+        }
+    }
+}
+
+
+void roll(void) {
+    int i;
+    char input;
+    for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
+        rollADice(i);
+    }
+    sortDice();
+    countDice();
+    printRolls();
+    do {
+        input = cgetc();
+        for (i = 0; i < NUM_DICE; i++)  {
+            if (input == i+'1')   {
+                game.diceSelected[i] = true;
+            }
+        }
+        if (input == 'r' && anyDiceSelected())    {
+            diceSelectCheck();
+            for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
+                rollADice(i);
+            }
+            sortDice();
+            countDice();
+            printf("Removed=%d\n", game.removedDice);   // To be removed
+            printRolls();
+        }
+    } while(input != 'e');
+    game.turn++;
+    if (game.turn > 3) game.turn = 0;
+}
+
+
 int main(void)  {
     // Variable declaration
     int highestScore = 1;   // Is the player with the highest score variable
     int i;
-    char input;
-    
     printInstructions();
+    initGame();
     // Game Starts
     do  {
-        do  {
-            for (i = 0; i < NUM_DICE; i++)  {
-                rollADice(i);
-            }
-            sortDice();
-            for (i = 0; i < NUM_DICE; i++) {
-                printf("%i",game.dice[i]);
-                countDice();
-                if (i != NUM_DICE - 1) {
-                    printf(", ");
-                }
-                else printf("\n");
-            }
-            do {
-                input = cgetc();
-                if (input == 'r')    {
-                    for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
-                        rollADice(i);
-                        
-                    }
-                    sortDice();
-                    countDice();
-                    for (i = 0; i < NUM_DICE; i++) {
-                        printf("%i",game.dice[i]);
-                        if (i != 5) {
-                            printf(", ");
-                        }
-                        else printf("\n");
-                    }
-                }
-            } while(input != 'e');
-        } while(game.riskedPoints != 0 || input != 'e');
+        roll();
+        game.removedDice = 0;
     } while(highestScore < 10000);
     return 0;
     }
