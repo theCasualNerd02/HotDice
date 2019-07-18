@@ -159,6 +159,8 @@ void findValueSelected(void)    {
             }
             else {
                 printf("Sorry but the chosen roll is invalid");
+                game.removedDice--;
+                game.diceSelected[i] = false;
             }
         }
     }
@@ -181,14 +183,17 @@ void roll(void) {
                 game.diceSelected[i] = true;
             }
         }
+        findValueSelected();
         if (input == 'r' && anyDiceSelected())    {
             diceSelectCheck();
             for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
                 rollADice(i);
             }
+            for (i = 0; i < NUM_DICE; i++)  {
+                game.diceSelected[i] = false;
+            }
             sortDice();
             countDice();
-            printf("Removed=%d\n", game.removedDice);   // To be removed
             printRolls();
         }
     } while(input != 'e');
@@ -196,7 +201,15 @@ void roll(void) {
     if (game.turn > 3) game.turn = 0;
 }
 
-
+void printAll(void) {
+    int i;
+    printInstructions();
+    printRolls();
+    printf("Removed=%d\n", game.removedDice);   // To be removed
+    for (i = 0; i < 4; i++) {
+        printf("%i\n",game.points[i]);
+    }
+}
 int main(void)  {
     // Variable declaration
     int highestScore = 1;   // Is the player with the highest score variable
@@ -206,6 +219,7 @@ int main(void)  {
     // Game Starts
     do  {
         roll();
+        printAll();
         game.removedDice = 0;
     } while(highestScore < 10000);
     return 0;
