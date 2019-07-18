@@ -137,26 +137,106 @@ bool anyDiceSelected(void)  {
     return false;
 }
 
-
-void findValueSelected(void)    {
+void printAll(void) {
     int i;
-    for (i = 0; i < MAX_DIE_VALUE; i++) {
+    printRolls();
+    printf("Removed=%d\n", game.removedDice);   // To be removed
+    for (i = 0; i < 4; i++) {
+        printf("player%i-%i\n",i,game.points[i]);
+    }
+    for (i = 0; i < NUM_DICE; i++)  {
         if (game.diceSelected[i])   {
-            if (game.dice[i] == 1 ) {
-                game.points[game.turn] += 100;
-                game.removedDice++;
-                printf("%i\n",game.removedDice);
-            }
-            else if ( game.dice[i] == 5)    {
-                game.points[game.turn] += 50;
-                game.removedDice++;
-                printf("%removed-i\n",game.removedDice);
-            }
-            else {
-                printf("Sorry but the chosen roll is invalid\n");
-                game.diceSelected[i] = false;
+            printf("%i-true ",i);
+        }
+        else    {
+            printf("%i-false ",i);
+        }
+    }
+    printf("\n");
+}
+void printTable(void)   {
+    int i;
+    for (i = 0; i < NUM_PLAYERS; i++)   {
+        printf("Player[%i]-%i\n",i+1,game.points[i]);
+    }
+    printf("%i\n",game.riskedPoints);
+}
+
+void printScreen(void)  {
+    clrscr();
+    printRolls();
+    printTable();
+}
+void diceRemoveSwap(int i)   {  // i is the position of the roll being removed
+    game.dice[i] = NUM_DICE - game.removedDice - 1;
+    sortDice();
+    countDice();
+    printRolls();
+}
+
+void findValueSelected(char input)    {
+    int i;
+    if (input > 48 && input < 55)   {   //b/w 1-6
+        for (i = 0; i < MAX_DIE_VALUE; i++) {
+            if (game.diceSelected[i])   {
+                if (game.dice[i] == 1 ) {
+                    if (game.diceCount[4] == 3) {
+                        game.riskedPoints += 1000;
+                        game.removedDice+= 3;
+                        printf("removed-%i\n",game.removedDice);
+                    }
+                    else    {
+                        game.riskedPoints += 100;
+                        diceRemoveSwap(i);
+                        game.removedDice++;
+                        printf("removed-%i\n",game.removedDice);
+                    }
+                }
+                else if (game.dice[i] == 2 && game.diceCount[1] == 3)   {
+                    game.riskedPoints += 200;
+                    game.removedDice+= 3;
+                    printf("removed-%i\n",game.removedDice);
+                }
+                else if (game.dice[i] == 3 && game.diceCount[2] == 3)   {
+                    game.riskedPoints += 300;
+                    game.removedDice+= 3;
+                    printf("removed-%i\n",game.removedDice);
+                }
+                else if (game.dice[i] == 4 && game.diceCount[3] == 3)   {
+                    game.riskedPoints += 400;
+                    game.removedDice+= 3;
+                    printf("removed-%i\n",game.removedDice);
+                }
+                else if ( game.dice[i] == 5)    {
+                    if (game.diceCount[4] == 3) {
+                        game.riskedPoints += 500;
+                        game.removedDice+= 3;
+                        printf("removed-%i\n",game.removedDice);
+                    }
+                    else    {
+                        game.riskedPoints += 50;
+                        diceRemoveSwap(i);
+                        game.removedDice++;
+                        printf("removed-%i\n",game.removedDice);
+                    }
+                }
+                else if (game.dice[i] == 6 && game.diceCount[5] == 3)   {
+                    game.riskedPoints += 600;
+                    game.removedDice+= 3;
+                    printf("removed-%i\n",game.removedDice);
+                }
+                else {
+                    printf("Sorry but the chosen roll is invalid\n");
+                    game.diceSelected[i] = false;
+                }
+                if (game.removedDice >= 6)  {
+                    game.removedDice = 0;
+                }
             }
         }
+    }
+    for (i = 0; i < NUM_DICE; i++)  {
+        game.diceSelected[i] = false;
     }
 }
 
@@ -172,14 +252,14 @@ void roll(void) {
     printRolls();
     do {
         input = cgetc();
-        for (i = 0; i < NUM_DICE; i++)  {
+        printScreen();
+        for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
             if (input == i+'1')   {
                 game.diceSelected[i] = true;
             }
         }
-        findValueSelected();
+        findValueSelected(input);
         if (input == 'r' && anyDiceSelected())    {
-            findValueSelected();
             for (i = 0; i < NUM_DICE - game.removedDice; i++)  {
                 rollADice(i);
             }
@@ -191,19 +271,11 @@ void roll(void) {
             printRolls();
         }
     } while(input != 'e');
+    game.points[game.turn]+= game.riskedPoints; // Need to either make risked points 0 if failed or add it in
     game.turn++;
     if (game.turn > 3) game.turn = 0;
 }
 
-void printAll(void) {
-    int i;
-    printInstructions();
-    printRolls();
-    printf("Removed=%d\n", game.removedDice);   // To be removed
-    for (i = 0; i < 4; i++) {
-        printf("%i\n",game.points[i]);
-    }
-}
 int main(void)  {
     // Variable declaration
     int highestScore = 1;   // Is the player with the highest score variable
@@ -213,7 +285,6 @@ int main(void)  {
     // Game Starts
     do  {
         roll();
-        printAll();
         game.removedDice = 0;
     } while(highestScore < 10000);
     return 0;
