@@ -20,17 +20,18 @@
 #define NUM_DICE 6
 #define MIN_DIE_VALUE 1
 #define MAX_DIE_VALUE 6
-#define NUM_PLAYERS 4
+#define MAX_PLAYERS 8
 
 
 typedef struct tGame {
-    int points[4];
+    int points[MAX_PLAYERS];
     int riskedPoints;
     int turn;
     int numActiveDice;
     int activeDice[NUM_DICE];
     int inactiveDice[NUM_DICE];
     int diceCount[MAX_DIE_VALUE];
+    int numPlayers;
     bool diceSelected[NUM_DICE];
     bool taken1;
 } tGame;
@@ -48,6 +49,10 @@ int mulitplePointValue[4][6] = {
 
 void initGame(void)    {
     int i;
+    char inputPlayer;
+    for (i = 0; i < MAX_PLAYERS; i++)   {
+        game.points[i] = 0;
+    }
     game.numActiveDice = NUM_DICE;
     for (i = 0; i < NUM_DICE; i++)  {
         game.diceSelected[i] = false;
@@ -56,7 +61,17 @@ void initGame(void)    {
     game.riskedPoints = 0;
     game.turn = 0;
     game.taken1 = false;
-    
+    do  {
+        printf("How many people are playing? (between 2 and 8)\n");
+        inputPlayer = cgetc();
+        if (inputPlayer < '2' || inputPlayer > '0' + MAX_PLAYERS) {
+            printf("Sorry the inputed number is invalid\n");
+        }
+        else    {
+            game.numPlayers = inputPlayer - '0';
+            break;
+        }
+    } while (inputPlayer < '2' || inputPlayer > '0' + MAX_PLAYERS);
 }
 
 
@@ -66,23 +81,23 @@ void printInstructions(void)    {
     videomode(VIDEOMODE_80x24);
     printf("Hot Dice!!\n");
     printf("Written by: Matthew Rand\n");
+    printf("From Rand-dom Software\n");
     printf("------------------------\n\n");
     printf("Instructions\n");
     printf("1. Each player takes turns rolling the dice. When it's your turn, you roll all six dice\n");
     printf("2. Points are earned every time you roll a 1,5, or 3 or more of a kind\n");
     printf("3. If none of your dice are worth points your turn ends\n");
-    printf("4. The game ends after someone reaches 10 000 points\n");
+    printf("4. The game ends after someone reaches 10 000 points\n\n");
     printf("Scoring\n");
     printf("1 = 100 pts\n");
     printf("5 = 50 pts\n");
     printf("1,1,1 = 1000 pts\n");
-    printf("2,2,2 = 200 pts\n");
-    printf("3,3,3 = 300 pts\n");
-    printf("4,4,4 = 400 pts\n");
-    printf("5,5,5 = 500 pts\n");
-    printf("6,6,6 = 600 pts\n\n");
-    printf("r means reroll, e means end turn\n");
-    printf("Press any key to continue: \n");
+    printf("3 of a kind = value x 100 pts\n");
+    printf("4 of a kind = 1000 pts\n");
+    printf("5 of a kind = 2000 pts\n");
+    printf("6 of a kind = 3000 pts\n\n");
+    printf("Type r to reroll, type e to end turn\n");
+    printf("Press any key to continue: \n\n");
     while (! kbhit())   {
         seed++;
     }
@@ -129,6 +144,7 @@ void countDice(void)    {
 
 void printRolls(void)   {
     int i;
+    printf("Dice - ");
     for (i = 0; i < game.numActiveDice; i++) {
         printf("%i",game.activeDice[i]);
         if (i != game.numActiveDice - 1) {
@@ -142,7 +158,15 @@ void printRolls(void)   {
         printf("%i", game.inactiveDice[i]);
         revers(false);
     }
-       printf("\n1, 2, 3, 4, 5, 6 select the values you wish to keep\n");
+    printf("\nType - ");
+    for (i = 1; i <= game.numActiveDice; i++)   {
+       printf("%i", i);
+        if (i != game.numActiveDice)    {
+            printf(", ");
+        }
+        
+    }
+    printf(" to select dice\n");
 }
 bool anyDiceSelected(void)  {
     int i;
@@ -156,7 +180,7 @@ void printAll(void) {
     int i;
     printRolls();
     for (i = 0; i < 4; i++) {
-        printf("player%i-%i\n",i,game.points[i]);
+        printf("Player%i-%i\n",i,game.points[i]);
     }
     for (i = 0; i < game.numActiveDice; i++)  {
         if (game.diceSelected[i])   {
@@ -170,7 +194,7 @@ void printAll(void) {
 }
 void printTable(void)   {
     int i;
-    for (i = 0; i < NUM_PLAYERS; i++)   {
+    for (i = 0; i < game.numPlayers; i++)   {
         if (i == game.turn) {
             revers(true);
         }
@@ -259,7 +283,7 @@ void takeTurn(void) {
     countDice();
     printScreen();
     if (!possibleDiceSelections())  {
-        printf("\nSorry there or no valid dice turn over\n");
+        printf("\nSorry there are no points to select. Turn over.\n");
         cgetc();
         game.numActiveDice = NUM_DICE;
         game.riskedPoints = 0;
@@ -286,7 +310,7 @@ void takeTurn(void) {
             countDice();
             printScreen();
             if (!possibleDiceSelections())  {
-                printf("\nSorry there or no valid dice turn over\n");
+                printf("\nSorry there are no points to select. Turn over.\n");
                 cgetc();
                 game.numActiveDice = NUM_DICE;
                 game.riskedPoints = 0;
@@ -304,10 +328,10 @@ void playGame(void) {
             break;
         }
         game.turn++;
-        if (game.turn > 3) game.turn = 0;
+        if (game.turn >= game.numPlayers) game.turn = 0;
         printScreen();
         if (game.riskedPoints > 0)  {
-            printf("player-%i Do you want to continue with %i die and %i risked points? y/n?", game.turn + 1, game.numActiveDice, game.riskedPoints);
+            printf("Player-%i, do you want to continue with %i die and %i risked points? y/n?", game.turn + 1, game.numActiveDice, game.riskedPoints);
             input = tolower(cgetc());
             if (input != 'y')   {
                 game.numActiveDice = NUM_DICE;
@@ -317,7 +341,7 @@ void playGame(void) {
         
     } while(true);
     clrscr();
-    printf("player-%i won with %i points\n", game.turn + 1, game.points[game.turn]);
+    printf("Player-%i won with %i points\n", game.turn + 1, game.points[game.turn]);
 }
 
 int main(void)  {
