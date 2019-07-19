@@ -45,6 +45,63 @@ int mulitplePointValue[4][6] = {
     { 2000, 2000, 2000, 2000, 2000, 2000},
     { 3000, 3000, 3000, 3000, 3000, 3000}
 };
+void visual1(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 2, 3, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
+void visual2(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 1, 2, 'o');
+    cputcxy(x + 3, 4, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
+void visual3(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 1, 2, 'o');
+    cputcxy(x + 2, 3, 'o');
+    cputcxy(x + 3, 4, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
+void visual4(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 1, 2, 'o');
+    cputcxy(x + 3, 2, 'o');
+    cputcxy(x + 1, 4, 'o');
+    cputcxy(x + 3, 4, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
+void visual5(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 1, 2, 'o');
+    cputcxy(x + 3, 2, 'o');
+    cputcxy(x + 2, 3, 'o');
+    cputcxy(x + 1, 4, 'o');
+    cputcxy(x + 3, 4, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
+void visual6(int dieNum)  {
+    int x = dieNum * 6;
+    textframexy(x, 0, 5, 7, 0);
+    cputcxy(x + 1, 2, 'o');
+    cputcxy(x + 3, 3, 'o');
+    cputcxy(x + 3, 2, 'o');
+    cputcxy(x + 1, 4, 'o');
+    cputcxy(x + 1, 3, 'o');
+    cputcxy(x + 3, 4, 'o');
+    if (dieNum < game.numActiveDice)
+        cputcxy(x + 2, 8, '1' + dieNum);
+}
 
 
 void initGame(void)    {
@@ -144,11 +201,24 @@ void countDice(void)    {
 
 void printRolls(void)   {
     int i;
-    printf("Dice - ");
     for (i = 0; i < game.numActiveDice; i++) {
-        printf("%i",game.activeDice[i]);
-        if (i != game.numActiveDice - 1) {
-            printf(", ");
+        if (game.activeDice[i] == 1)    {
+            visual1(i);
+        }
+        if (game.activeDice[i] == 2)    {
+            visual2(i);
+        }
+        if (game.activeDice[i] == 3)    {
+            visual3(i);
+        }
+        if (game.activeDice[i] == 4)    {
+            visual4(i);
+        }
+        if (game.activeDice[i] == 5)    {
+            visual5(i);
+        }
+        if (game.activeDice[i] == 6)    {
+            visual6(i);
         }
     }
     for (i= 0; i < NUM_DICE - game.numActiveDice; i++)
@@ -158,15 +228,8 @@ void printRolls(void)   {
         printf("%i", game.inactiveDice[i]);
         revers(false);
     }
-    printf("\nType - ");
-    for (i = 1; i <= game.numActiveDice; i++)   {
-       printf("%i", i);
-        if (i != game.numActiveDice)    {
-            printf(", ");
-        }
-        
-    }
-    printf(" to select dice\n");
+    
+    printf("      type the corresponding number to select dice\n");
 }
 bool anyDiceSelected(void)  {
     int i;
@@ -352,7 +415,7 @@ int main(void)  {
         initGame();
         // Game Starts
         playGame();
-        printf("Would you like to play again? y/n?");
+        printf("Would you like to play again? y/n? ");
         input = tolower(cgetc());
     } while (input == 'y');
     
