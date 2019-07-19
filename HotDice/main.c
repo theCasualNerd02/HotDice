@@ -45,6 +45,7 @@ int mulitplePointValue[4][6] = {
     { 2000, 2000, 2000, 2000, 2000, 2000},
     { 3000, 3000, 3000, 3000, 3000, 3000}
 };
+
 void visual1(int dieNum)  {
     int x = dieNum * 6;
     textframexy(x, 0, 5, 7, 0);
@@ -223,13 +224,27 @@ void printRolls(void)   {
     }
     for (i= 0; i < NUM_DICE - game.numActiveDice; i++)
     {
-        printf(", ");
-        revers(true);
-        printf("%i", game.inactiveDice[i]);
-        revers(false);
+        if (game.inactiveDice[i] == 1)    {
+            visual1(i + game.numActiveDice);
+        }
+        if (game.inactiveDice[i] == 2)    {
+            visual2(i + game.numActiveDice);
+        }
+        if (game.inactiveDice[i] == 3)    {
+            visual3(i + game.numActiveDice);
+        }
+        if (game.inactiveDice[i] == 4)    {
+            visual4(i + game.numActiveDice);
+        }
+        if (game.inactiveDice[i] == 5)    {
+            visual5(i + game.numActiveDice);
+        }
+        if (game.inactiveDice[i] == 6)    {
+            visual6(i + game.numActiveDice);
+        }
     }
-    
-    printf("      type the corresponding number to select dice\n");
+    gotoxy(0, 10);
+    //printf("      type the corresponding number to select dice\n");
 }
 bool anyDiceSelected(void)  {
     int i;
@@ -332,7 +347,21 @@ void findValueSelected(char input)    {
         }
     }
 }
-
+bool yOrN(void) {
+    do  {
+        char input;
+        input = tolower(cgetc());
+        if (input == 'y') {
+            return true;
+        }
+        else if (input == 'n')   {
+            return false;
+        }
+        else    {
+            printf("Invalid input try another: \n");
+        }
+    } while (true);
+}
 
 void takeTurn(void) {
     int i;
@@ -344,6 +373,12 @@ void takeTurn(void) {
     game.taken1 = false;
     sortDice();
     countDice();
+    clrscr();
+    printf("ROLLING DICE...\n");
+    for (i = 0; i < 14001; i++) {
+        
+    }
+    clrscr();
     printScreen();
     if (!possibleDiceSelections())  {
         printf("\nSorry there are no points to select. Turn over.\n");
@@ -371,6 +406,12 @@ void takeTurn(void) {
             game.taken1 = false;
             sortDice();
             countDice();
+            clrscr();
+            printf("ROLLING DICE...\n");
+            for (i = 0; i < 14001; i++) {
+                
+            }
+            clrscr();
             printScreen();
             if (!possibleDiceSelections())  {
                 printf("\nSorry there are no points to select. Turn over.\n");
@@ -384,7 +425,6 @@ void takeTurn(void) {
 }
 void playGame(void) {
     do  {
-        char input;
         takeTurn();
         game.points[game.turn]+= game.riskedPoints; // Need to either make risked points 0 if failed or add it in
         if (game.points[game.turn] >= 10000)    {
@@ -394,30 +434,28 @@ void playGame(void) {
         if (game.turn >= game.numPlayers) game.turn = 0;
         printScreen();
         if (game.riskedPoints > 0)  {
-            printf("Player-%i, do you want to continue with %i die and %i risked points? y/n?", game.turn + 1, game.numActiveDice, game.riskedPoints);
-            input = tolower(cgetc());
-            if (input != 'y')   {
-                game.numActiveDice = NUM_DICE;
+            printf("Player-%i, do you want to continue with %i die and %i risked points? y/n? \n", game.turn + 1, game.numActiveDice, game.riskedPoints);
+            if (!yOrN()) {
                 game.riskedPoints = 0;
+                game.numActiveDice = NUM_DICE;
             }
         }
         
-    } while(true);
+    } while (true);
     clrscr();
     printf("Player-%i won with %i points\n", game.turn + 1, game.points[game.turn]);
 }
 
 int main(void)  {
     // Variable declaration
-    char input;
+
     printInstructions();
     do  {
         initGame();
         // Game Starts
         playGame();
         printf("Would you like to play again? y/n? ");
-        input = tolower(cgetc());
-    } while (input == 'y');
+    } while (yOrN());
     
     return 0;
     }
