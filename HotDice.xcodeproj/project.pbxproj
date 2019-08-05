@@ -48,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		981BEA5D22F8A07E006873AD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		981BEA5F22F8A35F006873AD /* HotDice.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = HotDice.png; sourceTree = "<group>"; };
 		9879A8AE22DF53210060EB4E /* doNotBuild */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = doNotBuild; sourceTree = BUILT_PRODUCTS_DIR; };
 		9879A8B122DF53210060EB4E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		9879A8B322DF53210060EB4E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -82,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				981BEA5D22F8A07E006873AD /* README.md */,
+				981BEA5F22F8A35F006873AD /* HotDice.png */,
 				9879A8B022DF53210060EB4E /* HotDice */,
 				9879A8AF22DF53210060EB4E /* Products */,
 			);
