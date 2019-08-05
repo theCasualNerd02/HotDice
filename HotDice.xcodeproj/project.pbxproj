@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		981BEA5E22F8A07E006873AD /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 981BEA5D22F8A07E006873AD /* README.md */; };
 		9879A8B222DF53210060EB4E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9879A8B122DF53210060EB4E /* main.c */; };
 		9879A8B422DF53210060EB4E /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 9879A8B322DF53210060EB4E /* Makefile */; };
 		9879A8B722DF53210060EB4E /* AppleCommander.jar in Frameworks */ = {isa = PBXBuildFile; fileRef = 9879A8B622DF53210060EB4E /* AppleCommander.jar */; };
@@ -46,6 +47,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		981BEA5D22F8A07E006873AD /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		9879A8AE22DF53210060EB4E /* doNotBuild */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = doNotBuild; sourceTree = BUILT_PRODUCTS_DIR; };
 		9879A8B122DF53210060EB4E /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		9879A8B322DF53210060EB4E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -79,6 +81,7 @@
 		9879A8A422DF53210060EB4E = {
 			isa = PBXGroup;
 			children = (
+				981BEA5D22F8A07E006873AD /* README.md */,
 				9879A8B022DF53210060EB4E /* HotDice */,
 				9879A8AF22DF53210060EB4E /* Products */,
 			);
@@ -205,6 +208,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				981BEA5E22F8A07E006873AD /* README.md in Sources */,
 				9879A8B422DF53210060EB4E /* Makefile in Sources */,
 				9879A8B222DF53210060EB4E /* main.c in Sources */,
 			);
@@ -354,6 +358,7 @@
 				9879A8D322DF53210060EB4E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9879A8D422DF53210060EB4E /* Build configuration list for PBXNativeTarget "doNotBuild" */ = {
 			isa = XCConfigurationList;
@@ -362,6 +367,7 @@
 				9879A8D622DF53210060EB4E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
